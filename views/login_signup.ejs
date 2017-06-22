@@ -1,0 +1,22 @@
+<% layout('layout') -%>
+
+<%-partial('uploadForm')%>
+
+
+
+
+        <hr>
+
+<% if (target === '/signup') { %>
+<% block('nav').append('<li class="nav-item"><a class="nav-link" href="/">Home</a></li><li class="nav-item"><a class="nav-link" href="/login">Anmelden</a></li><li class="nav-item active"><a class="nav-link" href="/signup">Registrieren</a></li>') %>
+
+    <p>Du hast bereits einen Account? <a href="/login">Anmelden!</a></p>
+<% } else if (target === '/login') { %>
+<% block('nav').append('<li class="nav-item"><a class="nav-link" href="/">Home</a></li><li class="nav-item active"><a class="nav-link" href="/login">Anmelden</a></li><li class="nav-item"><a class="nav-link" href="/signup">Registrieren</a></li>') %>
+
+    <p>Du hast noch keinen Account? <a href="/signup">Registrieren!</a></p>
+<% } %>
+       
+        <p>Zurück zur <a href="/">Startseite</a>.</p>
+
+

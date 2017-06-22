@@ -1,0 +1,96 @@
+ body         {  /*padding-bottom:80px*/;
+            background: url("/images/background.jpg")}
+       .page-wrapper {
+   /* border: 5px solid rgba(230, 230, 230, 0.46);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+        padding: 5px;
+padding-top:75px;
+/*    border-radius: 10px;
+*/    background-color: rgba(255, 255, 255, 1);
+        border-style: groove;
+        border-width: 1px;
+        
+/*    background-color: rgba(0, 0, 0, 0.86);
+    color: white;*/
+
+    }
+
+
+.panel-box>.panel-heading {
+    color: #00415d;
+    border-color: #fff;
+    text-align:center;
+}
+.panel-box>.panel-heading a{
+    text-decoration: none;
+        color: #3b97d3;
+    font-weight: bold;
+    font-size: 15px;
+    -webkit-transition: all 0.1s linear;
+    -moz-transition: all 0.1s linear;
+    transition: all 0.1s linear;
+
+
+}
+.panel-box>.panel-heading a.active{
+    color: #ffffff;
+    font-size: 18px;
+
+        background-color: #576283;
+    padding: 10px;
+    border-radius: 10px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+h3 {
+	color: #556080;
+}
+
+.btn-primary {
+	    background-color: #556080;
+    border-color: #556080;
+}
+
+/* Start by setting display:none to make this hidden.
+   Then we position it in relation to the viewport window
+   with position:fixed. Width, height, top and left speak
+   speak for themselves. Background we set to 80% white with
+   our animation centered, and no-repeating */
+.loadingScreen {
+    display:    none;
+    position:   fixed;
+    z-index:    1111000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('/images/load.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .loadingScreen {
+    display: block;
+}
+
+
+.card {
+	color: black;
+	padding: 10px;
+	margin-bottom: 15px;
+	margin-top: 15px;
+}
+
+.media {
+	margin-bottom: 10px;
+}

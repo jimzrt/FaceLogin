@@ -1,0 +1,390 @@
+    <style>
+    video, canvas {
+    display: block;
+    }
+    canvas {
+    margin-left: auto;
+    margin-right: auto;
+    background-attachment: center top;
+    background-position:  center top;
+    }
+    #pictureBox{
+    position: relative;
+    }
+    .scanActive:after {
+    transition: all 3s;
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background:   url("/images/grid.png") no-repeat center / 600px 600px; 
+    
+/*    background-size: 4%;
+    background-color: rgba(0, 0, 0, 0.2);*/
+    padding: 1px;
+    opacity: 0;
+    }
+    .scanActive.grid:after {
+    transition: all 2s;
+    opacity: 1;
+    }
+    .scan1{width:100%;height:10%;background:linear-gradient(rgba(0,0,0,0),#7ff12a);position:absolute;animation:scan 1s ease-in-out;animation-iteration-count: 10;top:-5%;z-index:99;opacity:0.25;}
+    .scan2{width:10%;height:100%;background:linear-gradient(to right,rgba(0,0,0,0),#7ff12a);position:absolute;animation:scanV 2s ease-in-out;animation-iteration-count: 10;left:-5%;z-index:99;opacity:0.25;}
+    @keyframes scan{
+    50%{top:95%;transform: rotateX(180deg);}
+    100%{top:-5%; }
+    }
+    @keyframes scanV{
+    50%{left:95%;transform: rotateY(180deg);}
+    100%{left:-5%; }
+    }
+
+    #loginPicture {
+            max-height: 350px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    }
+    </style>
+
+          <form action="<%= target %>" method="post" id="form" style="padding: 15px 35px 45px;
+">
+
+
+          <% if (useGlobal) { %>
+            <div class="form-group">
+               <legend>Modus</legend>
+    <div class="form-check">
+      <label class="form-check-label">
+        <input type="radio" class="form-check-input" name="useGlobalLogin" value="False" checked>
+        Mit Benutzername und Bild anmelden
+      </label>
+    </div>
+    <div class="form-check">
+    <label class="form-check-label">
+        <input type="radio" class="form-check-input" name="useGlobalLogin" id="useGlobalLogin" value="True">
+        Nur mit Bild anmelden <small>(Muss im Benutzerkonto aktiviert sein)</small>
+      </label>
+    </div>
+            </div>
+
+<% } %>
+ <% if (useUsername) { %>
+
+
+            <div class="form-group" id="usernameFormGroup">
+              <input type="text" class="form-control" name="username" placeholder="Benutzername" >
+            </div>
+
+<% } %>
+            <!--         <div class="form-group">
+              <label>Password</label> -->
+              <input type="hidden" name="pictureID">
+              <input type="hidden" name='webcamPicture' id="webcamPicture"/>
+            <!--         </div>
+            -->
+            <div class="panel panel-box">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <a href="#" class="active" id="login-form-link"><i class="fa fa-picture-o" aria-hidden="true"></i> Bild hochladen...</a>
+                  </div>
+                  <div class="col-sm-6">
+                    <a href="#" id="register-form-link"><i class="fa fa-camera" aria-hidden="true"></i> Bild aufnehmen...</a>
+                  </div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div id="login-form" style="display: block;">
+                      <div class="form-group">
+                        <label class="btn  btn-info " id="pictureButton" style=" display:block;margin-left: auto;margin-right: auto;    background-color: #576283;
+    border-color: #556080;">
+                        Auswählen <input type="file" name="pictureFile" id="pictureInput" style="display: none;">
+                        </label>
+                      </div>
+                    </div>
+                    <div id="register-form" style="display: none;">
+                      <div class="form-group">
+                        <button class="btn btn-info" id="snap" style="width: 100%">Aufnehmen</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+            <video id="video" autoplay style="display:none;margin-left: auto;margin-right: auto;height: auto;width: 100%"></video>
+            <canvas id="canvas"  style="height: auto;width: 100%;display:none;"></canvas>
+            <div id="pictureBox" class="scanActive" >
+              <div class="scan1" style="display:none"></div>
+              <div class="scan2" style="display:none"></div>
+              <img src="/images/unknown.png" id="loginPicture" />
+            </div>
+          </div>
+<button type="submit" id="submitButton" class="btn  btn-outline-success btn-lg" style="    border-color: #576283;color: #576283"><%= button %></button>
+
+          
+<!--            <button id="testButton" class="btn btn-lg">SUPER TESTER 9000</button>
+ -->        </form>
+
+
+
+ <script type="text/javascript">
+
+//initializing
+(function() {
+
+
+
+    //error messages
+    <% for(var i=0; i<message.length; i++) { %>
+    $.notify("<%= message[i].msg %>");
+    <% } %>
+
+
+
+    // standard elements for taking the snapshot
+    var video = document.getElementById('video');
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var localStream;
+
+
+    //File reader for camera capture and input
+    //show preview and add base64String to hidden input
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        $('#loginPicture').attr('src', e.target.result);
+        $("#webcamPicture").val(e.target.result);
+    };
+
+
+    //when input changes - i.e. when picture is added 
+    $('input[name="pictureFile"]').change(function(e) {
+        if (e.target.files[0]) {
+                    startLoading();
+
+          var fileSize = ((e.target.files[0].size/1024)/1024).toFixed(4);
+
+            var file = e.target.files[0];
+            var imageType = /image.png/;
+            var imageType2 = /image.jpeg/;
+            if (!file.type.match(imageType) && !file.type.match(imageType2)) {
+                $.notify("Nur .jpg und .png sind zulässig");
+                            stopLoading();
+
+                return;
+            }
+            if (fileSize > 4) {
+                $.notify("Das Bild darf maximal 4MB groß sein.");
+                            stopLoading();
+
+                return;
+            }
+
+            reader.readAsDataURL(file);
+            stopLoading();
+
+        }
+    });
+
+
+    //when "Bild hochladen" is chosen and is not active - make active, stop video stream, hide video, show preview image
+
+    $('#login-form-link').on("click", function(e) {
+        e.preventDefault();
+
+        if ($(this).hasClass("active")) {
+
+
+            $("#pictureButton").trigger('click');
+
+                        return;
+
+        }
+        $("#login-form").delay(100).fadeIn(100);
+        $("#register-form").fadeOut(100);
+        $('#register-form-link').removeClass('active');
+        $(this).addClass('active');
+
+
+        //video.pause();
+        if (localStream) {
+            localStream.getVideoTracks()[0].stop();
+
+        }
+
+
+        $(video).hide();
+        $("#loginPicture").show();
+
+
+    });
+
+    //when "Bild aufnehmen" is chosen and is not active and camera is supported- make active, show video stream, hide preview image
+
+
+    $('#register-form-link').on("click", function(e) {
+        e.preventDefault();
+
+        if ($(this).hasClass("active")) {
+
+            console.log( $("#pictureButton"));
+
+
+            return;
+
+
+        }
+
+        // Get access to the camera!
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+
+
+
+            // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            }).then(function(stream) {
+                localStream = stream;
+                video.src = window.URL.createObjectURL(stream);
+                video.play();
+
+                $("#register-form").delay(100).fadeIn(100);
+                $("#login-form").fadeOut(100);
+                $('#login-form-link').removeClass('active');
+                $('#register-form-link').addClass('active');
+
+                $("#loginPicture").hide();
+
+                $(video).show();
+                //  $(canvas).hide();
+                $("#snap").html("Aufnehmen");
+
+
+
+
+            }).catch(function(error) {
+                $.notify(error.name);
+            });
+        }
+
+
+    });
+
+
+
+
+    $("#testButton").on("click", function(e) {
+        e.preventDefault();
+
+    });
+
+
+
+    // Trigger photo take
+    // draw video to canvas, add canvas data to hidden input field and use data to show preview 
+
+    $("#snap").on("click", function(e) {
+
+        e.preventDefault();
+
+        if ($(e.target).html() == "Aufnehmen") {
+            $(e.target).html('<i class="fa fa-repeat"></i> Neu...');
+
+            canvas.height = $(video).height();
+            canvas.width = $(video).width();
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            document.getElementById("webcamPicture").value = canvas.toDataURL();
+            $('#loginPicture').attr('src', canvas.toDataURL());
+            $(video).hide();
+            $("#loginPicture").show();
+        } else {
+            $(e.target).html('Aufnehmen');
+
+            $(video).show();
+            $("#loginPicture").hide();
+        }
+
+    });
+
+
+$('input:radio[name="useGlobalLogin"]').change(
+    function(){
+        if (this.value == 'True') {
+          $("#usernameFormGroup").fadeOut();
+        } else {
+                    $("#usernameFormGroup").fadeIn();
+
+        }
+    });
+
+
+
+
+    //On Form Submit
+
+    $('#submitButton').on('click', function(event) {
+
+        event.preventDefault();
+        // validation
+
+        if ($('#useGlobalLogin').length && $('#useGlobalLogin').prop("checked") != true ) {
+            if($('input[name="username"]').val() == ""){
+                 $("#usernameFormGroup").notify("Bitte Benutzername eingeben");
+            return;
+            }
+                      
+        }
+
+        if ($("#webcamPicture").val() == "") {
+            $("#loginPicture").notify("Bitte Bild auswählen");
+            return;
+        }
+        
+
+
+        //remove all inputs because of node express body parser not being able to handle multi-data
+        $("input[type='file']").attr("disabled", true);
+
+
+        //show CSI super hacker animation 
+        $(".scan1").fadeToggle("slow", "linear");
+        $(".scan2").fadeToggle("slow", "linear");
+
+        $("#pictureBox").addClass("grid");
+
+        setTimeout(function() {
+            $(".scan1").fadeToggle("slow", "linear");
+            $(".scan2").fadeToggle("slow", "linear");
+
+            $("#pictureBox").removeClass("grid");
+        }, 2000);
+
+
+        //submit after little delay
+        setTimeout(function() {
+            <% if (followTarget) { %>
+                 startLoading();
+                $("#form").submit();
+            <%} else {%>
+                startLoading();
+             $.post('<%= target %>',  $("#form").serialize(), onFormSuccess).always(function(){
+                stopLoading();
+             });
+             $("input[type='file']").attr("disabled", false);
+             <%} %>
+           // 
+
+        }, 2000);
+
+
+    });
+
+})();
+</script>

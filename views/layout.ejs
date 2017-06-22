@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= pageTitle %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="/js/notify.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/underscore-min.js"></script>
+<script type="text/javascript">
+	
+	    //Notification setup
+    $.notify.defaults({
+        className: "error",
+        position: "top center",
+        autoHideDelay: 3000
+    });
+
+
+
+</script>
+
+    </head>
+  <body>
+<style type="text/css">
+/*	nav.navbar.shrink {
+}
+
+nav.shrink a {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  font-size: 15px;
+}*/
+
+nav .navbar-brand img{
+	transition: height 0.35s ease-out;
+
+}
+nav.shrink .navbar-brand img{
+  height:  25px!important;
+}
+
+
+</style>
+
+
+
+
+<nav class="navbar fixed-top navbar-toggleable-md navbar-inverse bg-inverse">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+    <div class="container">
+    <div class="row">
+        <a class="navbar-brand" href="#"><img src="/images/logo.png" style="height: 50px;" /></a>
+
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      
+    	
+
+         <%- block('nav').toString() %>
+
+
+    </ul>
+    </div>
+</div>
+  </div>
+</nav>
+
+
+
+
+
+
+
+
+
+    <div class="container px-3">
+    <div class="row">
+      <div class="col-lg-<%= cols %> offset-lg-<%= offset %> col-md-12 col-xs-12">
+        <script type="text/javascript">
+        </script>
+        <div class="page-wrapper">
+          <div class="text-center" style="/*background-color: #5bc0de*/;padding: 5px;border-bottom-style: solid;border-bottom-width: 1px;border-bottom-color: #dfdfdf;"><h1><%= title %></h1></div>
+
+           <%- body -%>
+
+
+           </div>
+    </div>
+  </div>
+  </div>
+  <div class="loadingScreen"></div>
+</body>
+<script type="text/javascript">
+	
+
+	$(window).on("scroll", function() {
+    $("nav").toggleClass("shrink", $(this).scrollTop() > 50)
+});
+
+
+function startLoading(){
+	$("body").addClass("loading");
+
+}
+function stopLoading(){
+	$("body").removeClass("loading");
+
+}
+</script>
+</html>

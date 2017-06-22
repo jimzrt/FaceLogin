@@ -1,0 +1,303 @@
+<% layout('layout') -%>
+<% block('nav').append('<li class="nav-item"><a class="nav-link" href="/logout">Ausloggen</a></li>') %>
+
+<style type="text/css">
+  
+.tgl {
+  position: relative;
+  display: inline-block;
+  height: 30px;
+  cursor: pointer;
+}
+.tgl > input {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+  /* Put the input behind the label so it doesn't overlay text */
+  visibility: hidden;
+}
+.tgl .tgl_body {
+  width: 60px;
+  height: 30px;
+  background: white;
+  border: 1px solid #dadde1;
+  display: inline-block;
+  position: relative;
+  border-radius: 50px;
+}
+.tgl .tgl_switch {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background-color: white;
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  border-radius: 50%;
+  border: 1px solid #ccd0d6;
+  -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.13);
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.13);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.13);
+  -moz-transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), -moz-transform 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  -o-transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), -o-transform 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  -webkit-transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), -webkit-transform 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), transform 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  z-index: 1;
+}
+.tgl .tgl_track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-radius: 50px;
+}
+.tgl .tgl_bgd {
+  position: absolute;
+  right: -10px;
+  top: 0;
+  bottom: 0;
+  width: 55px;
+  -moz-transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), right 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  -o-transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), right 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  -webkit-transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), right 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  transition: left 250ms cubic-bezier(0.34, 1.61, 0.7, 1), right 250ms cubic-bezier(0.34, 1.61, 0.7, 1);
+  background: #556080 url("/images/tgl_check.png") center center no-repeat;
+}
+.tgl .tgl_bgd-negative {
+  right: auto;
+  left: -45px;
+  background: white url("/images/tgl_x.png") center center no-repeat;
+}
+.tgl:hover .tgl_switch {
+  border-color: #b5bbc3;
+  -moz-transform: scale(1.06);
+  -ms-transform: scale(1.06);
+  -webkit-transform: scale(1.06);
+  transform: scale(1.06);
+}
+.tgl:active .tgl_switch {
+  -moz-transform: scale(0.95);
+  -ms-transform: scale(0.95);
+  -webkit-transform: scale(0.95);
+  transform: scale(0.95);
+}
+.tgl > :not(:checked) ~ .tgl_body > .tgl_switch {
+  left: 30px;
+}
+.tgl > :not(:checked) ~ .tgl_body .tgl_bgd {
+  right: -45px;
+}
+.tgl > :not(:checked) ~ .tgl_body .tgl_bgd.tgl_bgd-negative {
+  right: auto;
+  left: -10px;
+}
+
+  
+</style>
+
+<div id="uploadModal" class="modal fade" style="color: black">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bild hinzufügen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <%-partial('uploadForm', {target: '/profile/pictures/add', useGlobal: false, useUsername: false, button: 'Hochladen', message: '',followTarget: false})%>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="page-header text-center">
+        <a href="/logout" class="btn btn-default btn-sm">Ausloggen</a>
+    </div>
+    <div class="row">
+        <!-- LOCAL INFORMATION -->
+        <div class="col-md-6">
+            <div class="well card">
+                <h3><span class="fa fa-user"></span> <%= user.username %></h3>
+                <p>
+                    <!--                         <strong>id</strong>: <%= user._id %><br>
+                    -->
+                    <strong>PersonID</strong>: <%= user.personId %><br>
+                    <img alt="<%= user.pictures[0].pictureId %>" style="max-width:100%; max-height:350px;" src="profilePictures/<%= user.pictures[0].file %>" />
+                </p>
+                <p>
+                    <strong>Login ohne Benutzername</strong>: <label class="tgl">
+                        <input id="globalLoginCheckbox" type="checkbox" <%= user.globalLoginAllowed ? 'checked' : '' %> />
+                        <span class="tgl_body">
+                            <span class="tgl_switch"></span>
+                            <span class="tgl_track">
+                                <span class="tgl_bgd"></span>
+                                <span class="tgl_bgd tgl_bgd-negative"></span>
+                            </span>
+                        </span>
+                    </label>
+                </p>
+                <!-- Button trigger modal -->
+            </div>
+        </div>
+        <!-- FACEBOOK INFORMATION -->
+        <div class="col-md-6">
+            <div class="well card">
+                <h3><span class="fa fa-picture-o"></span> Fotos</h3>
+                <ul id="pictureList" class="list-unstyled" style="overflow-y: auto;overflow-x: hidden;max-height:400px;">
+                    <% for(var i=1; i<user.pictures.length; i++) { %>
+                    <li class="media">
+                        <img class="d-flex mr-3" style="max-width: 130px;max-height: 130px; box-shadow: 0 0 4px rgba(0, 0, 0, .8);" src="profilePictures/<%= user.pictures[i].file %>">
+                        <div class="media-body">
+                            
+                            <strong>PictureID</strong>:<%= user.pictures[i].pictureId %><br>
+                            <button value="<%= user.pictures[i].pictureId %>" class="deletePicture btn btn-danger">Bild löschen</button>
+                        </div>
+                    </li>
+                    <% } %>
+                </ul>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
+                Bild hinzufügen
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- TWITTER INFORMATION -->
+        <div class="col-md-12">
+            <div class="well card">
+                <h3 ><span class="fa fa-user-secret"></span> Secret Text</h3>
+                <form method="post">
+                    <textarea id="myTextarea"></textarea>
+                    <input type="submit" class="btn" id="submitText" value="Speichern" style="margin-top: 10px">
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script src="/js/tinymce.min.js"></script>
+<script type="text/javascript">
+  tinymce.init({
+    selector: '#myTextarea',
+    theme: 'modern',
+    height: '400px',
+    plugins: [
+      'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+      'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+      'save table contextmenu directionality emoticons template paste textcolor'
+    ],
+    toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+    init_instance_callback : "myCustomInitInstance"
+  });
+
+
+function myCustomInitInstance(inst) {
+        inst.setContent((<%-JSON.stringify({ content: user.secretText })%>.content));
+         
+}
+
+
+
+
+
+function onFormSuccess(data){
+
+        $('#uploadModal').modal('toggle');
+
+    if(data.code != undefined){
+                    $.notify(data.message);
+
+           
+    }else {
+ $.notify("Bild hinzugefügt", "success")
+
+        $("#pictureList").append('<li class="media"><img class="d-flex mr-3" style="max-width: 130px;max-height: 130px; box-shadow: 0 0 4px rgba(0, 0, 0, .8);" src="profilePictures/'+data.filename+'"><div class="media-body"><strong>PictureID</strong>:'+data.pictureId+'<br><button value="'+data.pictureId+'" class="deletePicture btn btn-danger">Bild löschen</button></li>');
+
+    }
+   // 
+
+}
+
+
+
+$('#pictureList').on('click','.deletePicture', function(event){
+    event.preventDefault();
+                        startLoading();
+
+    var picture = $(this);
+     $.ajax({
+        type:       'DELETE',
+        cache:      false,
+        url:        '/profile/pictures/delete/'+picture.val(),
+        success:    function(data){
+            
+                $.notify("Bild gelöscht", "success");
+                picture.parent().parent().remove();
+            }
+    }).always(function(){
+stopLoading();
+
+    });
+    return false;
+
+
+   
+
+
+});
+
+    //On Form Submit
+
+    $('#submitText').on('click', function(event) {
+
+        event.preventDefault();
+       var ed = tinyMCE.activeEditor.getContent();
+  //  var data = ed.getContent();
+
+    //console.log(ed);
+  //  alert(ed);
+    $.ajax({
+        type:       'POST',
+        cache:      false,
+        url:        '/profile/saveText',
+        data:       'data=' + encodeURIComponent((ed)),
+        success:    function(data){
+                $.notify("Gespeichert", "success");
+                   
+        }
+    });
+    return false;
+        
+
+
+    });
+
+    $('#globalLoginCheckbox').change(function() {
+
+        console.log(this.checked);
+    
+             $.ajax({
+        type:       'POST',
+        cache:      false,
+        url:        '/profile/useGloabalLogin',
+        data:       'useGloabalLogin='+this.checked,
+        success:    function(data){
+            
+                $.notify("Gespeichert", "success");
+console.log(data);            },
+error: function(error){
+    console.log(error);
+    }
+        
+
+});
+
+
+
+}); 
+
+
+</script>
